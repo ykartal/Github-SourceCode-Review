@@ -1,0 +1,3 @@
+ .spyproject/**
+*.csv
+**/__pycache__/**
