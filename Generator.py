@@ -19,9 +19,10 @@ with open('project_names_owners.csv') as inputCsv:
             if len(jsonList)>0:
                     for comment in jsonList:
                         diff_hunk = comment['diff_hunk'].splitlines()
-                        sourceCode = diff_hunk[len(diff_hunk)-1][1:]
+                        sourceCode = diff_hunk[len(diff_hunk)-1][1:].strip()
+                        single_comment = comment['body'].strip().replace("\n", " ").replace("\r", " ");
                         #∟print([sourceCode.strip(), comment['body'].strip().replace("\n", " ").replace("\r", " ")])
-                        csvFileWriter.writerow([sourceCode.strip(), comment['body'].strip().replace("\n", " ").replace("\r", " ")])
+                        csvFileWriter.writerow([sourceCode, single_comment, row[1]], row[0])
         
                 
                 
