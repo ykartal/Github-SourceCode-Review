@@ -9,12 +9,13 @@ class GitHubPulls:
         self.url = self.url
         return self
         
-    def listPullCommentsRequests(self, owner, repo, access_token):
-        pullGet = self.url + "/repos/" + owner + "/" + repo + "/pulls/comments"
+    def listPullCommentsRequests(self, owner, repo, page, access_token):
+        pullGet = self.url + "/repos/" + owner + "/" + repo + "/pulls/comments?page="+str(page)
         authorization_header = {"Authorization": "token %s" % access_token}
-        if requests.get(pullGet).status_code == 200:
-            return requests.get(pullGet, headers=authorization_header).json();
+        req = requests.get(pullGet, headers=authorization_header)
+        if req.status_code == 200:
+            return req.json();
         else:
-            link = requests.get(pullGet).links
+            link = req.links
             return link
 
