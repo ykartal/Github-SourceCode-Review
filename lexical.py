@@ -192,7 +192,7 @@ def to_lex(inF):
     output = ""
     # On ouvre les fichiers en arguments.
     try:
-        outF = open('out', "w+")
+        outF = open('out', "w+", encoding="utf-8")
     except IOError:
         print(
             "\nVerifiez que vous avez bien les droits d'ecritures dans le dossier et que le fichier en entre existe bien.\n")
@@ -208,7 +208,7 @@ def to_lex(inF):
 
     # On regarde si l'execution de l'analyseur c'est bien passee.
     if etat == True:
-        print("Tout c'est bien passe.")
+        #print("Tout c'est bien passe.")
         for i in lexique:
             if i.label != '\n':
                 output = output + "(" + i.label + ", " + i.type + ") "
@@ -222,8 +222,8 @@ def to_lex(inF):
                 outF.write("\n")
                 output = output + "\n"
 
-    else:
-        print("")
+    #else:
+        #print("")
         # print("\n\nErreur a la ligne " + str(numLigne + 1) + ", caractere", str(numColonnes + 1) + ".")
         # print(Dictionnaire_Erreurs[etat], "\n")
         # print(listProg[numLigne])

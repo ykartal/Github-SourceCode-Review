@@ -10,9 +10,10 @@ githubToken = config['DEFAULT']['githubToken']
 
 time_start = time.time()
 request_count = 0
-with open('project_names_owners.csv') as inputCsv:
-    with open('codeReviewDataset.csv', mode='w', newline='', encoding="utf-8") as csvFile:
+with open('dataset/project_names_owners.csv') as inputCsv:
+    with open('dataset/codeReviewDataset.csv', mode='w', newline='', encoding="utf-8") as csvFile:
         csvFileWriter = csv.writer(csvFile, delimiter=',', quotechar='"', quoting=csv.QUOTE_ALL)
+        csvFileWriter.writerow(['diff_hunk','review','reviewer_id','reviewer_username','reviewer_type','reviewer_site_admin','owner','repo'])
         csv_reader = csv.reader(inputCsv, delimiter=',')
         index = 0
         total_count=0
@@ -48,8 +49,14 @@ with open('project_names_owners.csv') as inputCsv:
                         while not sourceCode:
                             sourceCode = diff_hunk[len(diff_hunk)-i][1:].strip()
                             i = i+1
-                        
-                        csvFileWriter.writerow([sourceCode, single_comment, row[1], row[0]])
+                        # sourceCode=comment['diff_hunk'].strip().replace("\n", " ").replace("\r", " ");
+                        reviewer=comment['user']
+                        if reviewer is not None:
+                            reviewer_id=reviewer['id']
+                            reviewer_username= reviewer['login']
+                            reviewer_type= reviewer['type']
+                            reviewer_site_admin= reviewer['site_admin']
+                            csvFileWriter.writerow([sourceCode, single_comment, reviewer_id, reviewer_username, reviewer_type, reviewer_site_admin, row[1], row[0]])
                 else:
                     break
                 
