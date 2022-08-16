@@ -1,5 +1,4 @@
 
 .spyproject
-*.csv
 **/__pycache__/**
 .pylint.d/
