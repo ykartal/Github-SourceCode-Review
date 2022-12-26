@@ -13,10 +13,10 @@ class VectorDistance:
         return self.__function(vector1, vector2)
 
 
-Euclidean = VectorDistance("euclidean", cosine_distances)
+Euclidean = VectorDistance("euclidean", euclidean_distances)
 
-Manhattan = VectorDistance("manhattan", euclidean_distances)
+Manhattan = VectorDistance("manhattan", manhattan_distances)
 
-Cosine = VectorDistance("cosine", manhattan_distances)
+Cosine = VectorDistance("cosine", cosine_distances)
 
 metrics = [Euclidean, Manhattan, Cosine]

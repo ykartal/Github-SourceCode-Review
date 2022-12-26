@@ -1,0 +1,18 @@
+{
+    "vectorizer":{
+        "name": "bow",
+        "args": {}
+    },
+    "experiment_params":{
+        "vector_distance": "cosine",
+        "text_similarity": "bleu",
+        "k_fold": 5,
+        "candidate_count": 1,
+        "random_state": 42,
+        "chunk_size": 1000,
+        "round_degree": 4,
+        "load_embeddings": true,
+        "embeddings_path": "./data/comment_finder/vectors/bow_vectors.npz"
+    }
+
+}

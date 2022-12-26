@@ -1,84 +1,123 @@
 import os
 import time
 import traceback
-import pandas as pd, numpy as np
+import pandas as pd
+import numpy as np
 from dateutil import parser
 from abc import ABC, abstractmethod
 from configparser import ConfigParser
 from dataclasses import dataclass, field
+from typing import TypedDict, Union
+import uuid
+from helpers.calculate_metrics import calculate_metric_means_with_top_k_closest_samples
+from helpers.text_similarity import TextDistance
 
-config = ConfigParser()
-config.read(config.read('config.ini'))
+from helpers.vector_distance import VectorDistance
+from config import RESULT_PATH, RANDOM_STATE, CHUNK_SIZE
+from sklearn.feature_extraction.text import CountVectorizer
+
+class Result(TypedDict):
+    """
+    Result of an experiment.
+    """
+    name: str
+    result: pd.DataFrame
 
 
 @dataclass
-class BaseExperiment(ABC):
-    result_path = config["PATH"]["result_path"]
-    results: dict = field(init=False, default_factory=dict)
+class PhaseOneExperiment():
+    name: str
+    vectorizers: list[CountVectorizer]
+    distance_methods: list[VectorDistance]
+    text_similarity_methods: list[TextDistance]
+    candidate_k: int
+    info: list = field(init=False, default_factory=list)
+    path: str = field(init=False, default=None)
+    results: Result = field(init=False, default_factory=Result, repr=False)
 
-    def __post_init__(self):
-        self.path = os.path.join(
-            self.result_path, self.name, time.strftime("%Y%m%d-%H%M%S"))
-        os.makedirs(self.path, exist_ok=True)
-
-    @property
-    @abstractmethod
-    def name(self) -> str:
-        pass
-
-    @abstractmethod
     def _run(self):
-        pass
+        for vectorizer in self.vectorizers:
+            vectorizer_name = vectorizer.__name__.lower().replace("vectorizer", "")
+            for distance_method in self.distance_methods:
+                results = calculate_metric_means_with_top_k_closest_samples(self.candidate_k,
+                    self.train, self.test, vectorizer, distance_method, self.text_similarity_methods)
+                self.results[f"{vectorizer_name}_{distance_method.name}"] = pd.DataFrame(results)
 
-    @abstractmethod
-    def visualize_results(self):
-        pass
 
-    def save_results(self):
+    def get_exact_matches(self):
+        exact_matches = []
+        for name, df in self.results.items():
+            exact_match_count = df[df["test_comment"]
+                                   == df["recommended_comment"]].shape[0]
+            ratio = (exact_match_count / df.shape[0]) * 100
+            exact_matches.append(
+                {"name": name, "exact_match_count": exact_match_count, "ratio":  round(ratio, 3)})
+
+    def calculate_range_means(self):
+        calc_col = "distance"
+        results = self._normalize_results_column(calc_col)["result"]
+        means = []
+        for i in range(10):
+            metrics = results.filter(like="metric:", axis=1).columns.to_list()
+            metric_info = {}
+            metric_info["distance"] = f"{i/10} - {(i+1)/10}"
+            for metric in metrics:
+                mean = results[(results[calc_col] >= i/10) &
+                               (results[calc_col] <= (i+1)/10)][metric].mean()
+                metric_info[metric.replace("metric:", "")] = round(mean, 3)
+            means.append(metric_info)
+        return means
+
+    def save_results(self, id=None, name=None):
+        id = uuid.uuid4().__str__() if id is None else id
+        self.path = os.path.join(RESULT_PATH, self.name, id, name)
+
+        os.makedirs(self.path, exist_ok=True)
         for result_name, result in self.results.items():
             result.to_parquet(os.path.join(
                 self.path, f"{result_name}.parquet"))
+        pd.DataFrame(self.info).to_csv(
+            os.path.join(self.path, "info.csv"), index=False)
 
-    def normalize_results_column(self, column: str):
-        for result_name, result in self.results.items():
-            result[column] = self.normalize_data(
-                result[column])
-        result[column] = self.normalize_data(result[column])
+        self.generate_report()
+
+    def _normalize_results_column(self, column: str, inplace=False):
+        new_results = self.results.copy() if not inplace else self.results
+        for _, result in new_results.items():
+            result[column] = self.normalize_data(result[column])
+        return new_results
 
     def normalize_data(self, data):
+        '''
+        Normalize data to range [0, 1] with MaxMin
+        '''
         return (data - np.min(data)) / (np.max(data) - np.min(data))
 
-    def __prepare_data(self, data_path: str, train_test_split: float, random_state: int):
-        self.data = pd.read_csv(data_path)
-        self.train = self.data.sample(
-            frac=train_test_split, random_state=random_state)
-        self.test = self.data.drop(self.train.index)
-
     def load_results(self, experiment_time: str):
-        self.path = os.path.join(self.result_path, self.name, experiment_time)
+        self.path = os.path.join(RESULT_PATH, self.name, experiment_time)
         for result_name in os.listdir(self.path):
             if ".parquet" in result_name:
                 self.results[result_name.removesuffix(".parquet")] = pd.read_parquet(os.path.join(
                     self.path, result_name))
 
-    def write_info(self, msg):
-        with open(os.path.join(self.path, "info.txt"), "a") as f:
-            f.write(msg)
+    def write_info(self, key, value):
+        self.info.append({"key": key, "value": value})
 
-    def run(self, data_path: str, train_test_split: float = .95, random_state: int = 1):
+    def run(self, train, test):
+        self.train = train
+        self.test = test
         try:
-            self.write_info(
-                f"Experiment: {self.name.replace('_', ' ').title()}\n")
-            self.__prepare_data(data_path, train_test_split, random_state)
-            self.write_info(f"Train size: {len(self.train)}\n")
-            self.write_info(f"Test size: {len(self.test)}\n")
+            self.write_info("Experiment", self.name.replace('_', ' ').title())
+            self.write_info("Train size", len(self.train))
+            self.write_info("Test size", len(self.test))
             experiment_start = time.strftime("%X")
-            self.write_info(f"Start: {experiment_start}\n")
+            self.write_info("Experiment start", experiment_start)
             self._run()
             experiment_end = time.strftime("%X")
-            self.write_info(f"End: {experiment_end}\n")
+            self.write_info("Experiment end", experiment_end)
             execution_time = parser.parse(
                 experiment_end) - parser.parse(experiment_start)
-            self.write_info(f"Execution time: {execution_time}\n")
-        except Exception:
-            self.write_info(f"{traceback.format_exc()}")
+            self.write_info("Execution time", execution_time)
+        except Exception as e:
+            self.write_info("Error", traceback.format_exc())
+            raise e
