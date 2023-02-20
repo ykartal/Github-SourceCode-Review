@@ -2,3 +2,10 @@
 .spyproject
 **/__pycache__/**
 .pylint.d/
+
+*.jpg
+*.h5
+*.npy
+*.npz
+*.png
+*.txt
