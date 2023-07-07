@@ -1,7 +1,0 @@
-{
-    "bert" : "data/comment_finder/vectors/unix_base.npy",
-    "bow": "data/comment_finder/vectors/bow.npz",
-    "tfidf": "data/comment_finder/vectors/tfidf.npz",
-    "doc2vec": "data/comment_finder/vectors/d2v.npy",
-    "word2vec-mean": "data/comment_finder/vectors/w2v.npy"
-}
