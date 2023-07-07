@@ -5,8 +5,10 @@ This repository contains research code for the paper ["Automating Modern Code Re
 Data and models available at [Mega.nz](https://mega.nz/folder/kv4GDDJa#pcgag7752nVLPumSilU_yg).
 
 ## Architecture
+<p  align="center">
+<img src="public/architecture.png" width="500"></img>
+<p>
 
-![Architecture](public/architecture.png)
 
 ## Auxiliary Libraries
 
@@ -22,12 +24,17 @@ You can find example usage in `experiment_runner.ipynb`.
 
 ## Example
 
-![Example](public/example.png)
+<p  align="center">
+<img src="public/example.png" width="450"></img>
+<p>
+
 
 ## Results
 
 ![Vectorizer Comparison](public/results_chart.png)
-![Model Comparison](public/results_table.png)
+<p  align="center">
+<img src="public/results_table.png" width="450"></img>
+<p>
 
 ## Citation
 
