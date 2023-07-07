@@ -21,9 +21,21 @@ In `libs` directory, you can find auxiliary libraries that we used in our experi
 You can find example usage in `experiment_runner.ipynb`.
 
 ## Example
+
 ![Example](public/example.png)
 
 ## Results
 
 ![Vectorizer Comparison](public/results_chart.png)
 ![Model Comparison](public/results_table.png)
+
+## Citation
+
+If you use this repository for your work, please don't forget to give proper credit by including the accompanying [paper](https://dx.doi.org/10.2139/ssrn.4450324) in your references.
+
+    @article{kartal2023,
+      title={Automating Modern Code Review Processes with Code Similarity Measurement},
+      author={Kartal, Yusuf and Akdeniz, Kaan and Özkan, Kemal},
+      journal={Information and Software Technology},
+      year={2023}
+    }
