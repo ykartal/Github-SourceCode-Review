@@ -40,9 +40,14 @@ You can find example usage in `experiment_runner.ipynb`.
 
 If you use this repository for your work, please don't forget to give proper credit by including the accompanying [paper](https://dx.doi.org/10.2139/ssrn.4450324) in your references.
 
-    @article{kartal2023,
-      title={Automating Modern Code Review Processes with Code Similarity Measurement},
-      author={Kartal, Yusuf and Akdeniz, Kaan and Özkan, Kemal},
-      journal={Information and Software Technology},
-      year={2023}
-    }
+@article{KARTAL2024107490,
+    title = {Automating modern code review processes with code similarity measurement},
+    journal = {Information and Software Technology},
+    pages = {107490},
+    year = {2024},
+    issn = {0950-5849},
+    doi = {https://doi.org/10.1016/j.infsof.2024.107490},
+    url = {https://www.sciencedirect.com/science/article/pii/S0950584924000958},
+    author = {Yusuf Kartal and E. Kaan Akdeniz and Kemal Özkan},
+    keywords = {Modern code review, Vectorization, Code similarity, Information retrieval}  
+}
