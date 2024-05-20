@@ -1,6 +1,6 @@
 # Automating Modern Code Review Processes with Code Similarity Measurement
 
-This repository contains research code for the paper ["Automating Modern Code Review Processes with Code Similarity Measurement"](http://dx.doi.org/10.2139/ssrn.4450324). Our research aims to automating code review processes by measuring code similarity.
+This repository contains research code for the paper ["Automating Modern Code Review Processes with Code Similarity Measurement"](https://doi.org/10.1016/j.infsof.2024.107490). Our research aims to automating code review processes by measuring code similarity.
 
 Data and models available at [Mega.nz](https://mega.nz/folder/kv4GDDJa#pcgag7752nVLPumSilU_yg).
 
@@ -38,7 +38,7 @@ You can find example usage in `experiment_runner.ipynb`.
 
 ## Citation
 
-If you use this repository for your work, please don't forget to give proper credit by including the accompanying [paper](https://dx.doi.org/10.2139/ssrn.4450324) in your references.
+If you use this repository for your work, please don't forget to give proper credit by including the accompanying [paper](https://doi.org/10.1016/j.infsof.2024.107490) in your references.
 
 
     @article{KARTAL2024107490,
